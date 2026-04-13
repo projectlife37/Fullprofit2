@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Profit Bundle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080808;
+  --bg2: #0e0e0e;
+  --bg3: #141414;
+  --surface: #1a1a1a;
+  --surface2: #222;
+  --border: #2a2a2a;
+  --border2: #333;
+  --text: #f0ece4;
+  --text2: #a09890;
+  --text3: #5a5450;
+  --accent: #d4f57a;
+  --accent2: #b8e060;
+  --accent-dim: rgba(212,245,122,0.08);
+  --accent-glow: rgba(212,245,122,0.15);
+  --red: #ff4d4d;
+  --red-dim: rgba(255,77,77,0.1);
+  --gold: #f5c842;
+  --radius: 4px;
+  --radius2: 8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── UTILITIES ─────────────────────────────────── */
+.hidden { display: none !important; }
+.invisible { opacity: 0; pointer-events: none; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+@keyframes countUp {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.fade-up { animation: fadeUp 0.6s ease both; }
+.fade-in { animation: fadeIn 0.5s ease both; }
+
+/* ─── NOISE TEXTURE ─────────────────────────────── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ─── PROGRESS BAR ──────────────────────────────── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 0%;
+  background: var(--accent);
+  z-index: 1000;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* ─── SECTION 1: HOOK ───────────────────────────── */
+#hook {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+#hook::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(212,245,122,0.04) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.hook-line {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 6vw, 3.5rem);
+  line-height: 1.15;
+  color: var(--text);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  margin-bottom: 1.5rem;
+}
+
+.hook-line.visible { opacity: 1; }
+
+.hook-line-2 {
+  font-size: clamp(1rem, 3.5vw, 1.6rem);
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+  font-weight: 300;
+}
+
+.hook-line-3 {
+  font-size: clamp(0.9rem, 3vw, 1.3rem);
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+  font-weight: 300;
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 2px; height: 1em;
+  background: var(--accent);
+  margin-left: 4px;
+  vertical-align: middle;
+  animation: blink 1s step-end infinite;
+}
+
+/* ─── SECTION 2: CHALLENGE ──────────────────────── */
+#challenge {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+#challenge.visible { opacity: 1; transform: translateY(0); }
+
+.challenge-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 2rem;
+}
+
+.challenge-headline {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.5rem, 9vw, 5rem);
+  line-height: 1.05;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.challenge-sub {
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  color: var(--text3);
+  margin-bottom: 3rem;
+  font-weight: 300;
+}
+
+.btn-challenge {
+  background: var(--accent);
+  color: #0a0a0a;
+  border: none;
+  padding: 1.1rem 2.4rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-challenge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+.btn-challenge:hover::after { transform: translateX(100%); }
+.btn-challenge:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(212,245,122,0.3); }
+.btn-challenge:active { transform: translateY(0); }
+
+.timer-pill {
+  margin-top: 1.2rem;
+  font-size: 0.75rem;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+}
+
+/* ─── SECTION 3: INTERACTIVE ENGINE ─────────────── */
+#engine {
+  min-height: 100vh;
+  padding: 4rem 1.5rem;
+  max-width: 680px;
+  margin: 0 auto;
+  display: none;
+}
+#engine.active { display: block; }
+
+.step-indicator {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 3rem;
+}
+.step-dot {
+  width: 28px; height: 3px;
+  background: var(--border2);
+  border-radius: 2px;
+  transition: background 0.4s ease;
+}
+.step-dot.done { background: var(--accent); }
+.step-dot.active { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+
+.step-block {
+  display: none;
+  animation: fadeUp 0.5s ease both;
+}
+.step-block.active { display: block; }
+
+.step-prompt {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.step-sub {
+  font-size: 0.8rem;
+  color: var(--text3);
+  margin-bottom: 2rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+.input-field {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 1rem;
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius2);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  resize: none;
+}
+.input-field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.input-field::placeholder { color: var(--text3); }
+
+.hint-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.hint-row.visible { opacity: 1; }
+
+.hint-pill {
+  font-size: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  padding: 0.3rem 0.8rem;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.hint-pill:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-continue {
+  display: block;
+  width: 100%;
+  margin-top: 1.5rem;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.9rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+}
+.btn-continue:hover {
+  background: var(--accent);
+  color: #0a0a0a;
+}
+
+/* Loading */
+.loading-block {
+  text-align: center;
+  padding: 3rem 0;
+}
+.loading-text {
+  font-size: 0.85rem;
+  color: var(--text3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.loading-bar-wrap {
+  width: 200px;
+  height: 2px;
+  background: var(--border);
+  margin: 1.2rem auto 0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.loading-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  animation: loadFill 1s ease forwards;
+  border-radius: 2px;
+}
+@keyframes loadFill {
+  to { width: 100%; }
+}
+
+/* Product ideas */
+.ideas-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+}
+
+.idea-card {
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  border-radius: var(--radius2);
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0;
+  animation: fadeUp 0.4s ease both;
+  position: relative;
+  overflow: hidden;
+}
+.idea-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.idea-card:hover { border-color: var(--accent); background: var(--bg3); }
+.idea-card:hover::before { opacity: 1; }
+.idea-card.selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+.idea-card.selected::before { opacity: 1; }
+
+.idea-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  color: var(--text);
+}
+.idea-card p {
+  font-size: 0.8rem;
+  color: var(--text3);
+  line-height: 1.5;
+}
+.idea-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 0.2rem 0.6rem;
+  border-radius: 100px;
+  margin-bottom: 0.6rem;
+}
+
+/* Product build reveal */
+.product-build {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  padding: 1.5rem;
+  overflow: hidden;
+}
+.build-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.5rem;
+  color: var(--text);
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  animation: fadeUp 0.5s ease 0.1s both;
+}
+.build-section {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.4s ease;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.build-section:last-child { border-bottom: none; }
+.build-section.revealed { opacity: 1; transform: translateX(0); }
+.build-section-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.3rem;
+}
+.build-section-content {
+  font-size: 0.85rem;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* Sales preview */
+.sales-preview {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  padding: 1.8rem;
+  position: relative;
+  overflow: hidden;
+}
+.preview-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 1.5rem;
+}
+.preview-headline {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.3rem, 4vw, 1.9rem);
+  color: var(--text);
+  margin-bottom: 0.8rem;
+  line-height: 1.2;
+}
+.preview-pitch {
+  font-size: 0.85rem;
+  color: var(--text2);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+.preview-cta {
+  display: inline-block;
+  background: var(--accent);
+  color: #0a0a0a;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.7rem 1.5rem;
+  border-radius: var(--radius);
+  letter-spacing: 0.05em;
+}
+.watermark {
+  position: absolute;
+  bottom: 1rem; right: 1rem;
+  font-size: 0.65rem;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  opacity: 0.4;
+}
+
+/* ─── SECTION 4: IDENTITY SHIFT ─────────────────── */
+#identity {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  position: relative;
+  display: none;
+}
+#identity.active { display: flex; }
+
+.identity-line {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 6vw, 3.2rem);
+  line-height: 1.2;
+  color: var(--text);
+  opacity: 0;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  transform: translateY(15px);
+  margin-bottom: 1.2rem;
+}
+.identity-line.pause {
+  font-size: clamp(1rem, 3.5vw, 1.6rem);
+  color: var(--red);
+  font-family: 'DM Mono', monospace;
+}
+.identity-line.visible { opacity: 1; transform: translateY(0); }
+
+/* ─── SECTION 5-6: OFFER ─────────────────────────── */
+#offer-section {
+  padding: 5rem 1.5rem;
+  max-width: 720px;
+  margin: 0 auto;
+  display: none;
+}
+#offer-section.active { display: block; }
+
+.offer-hook {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 5.5vw, 2.8rem);
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+.offer-hook span { color: var(--accent); font-style: italic; }
+
+.offer-sub {
+  font-size: 0.85rem;
+  color: var(--text3);
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+/* Offer stack */
+.offer-stack { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 3rem; }
+
+.stack-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 1.1rem 1.3rem;
+  opacity: 0;
+  animation: fadeUp 0.5s ease both;
+  transition: border-color 0.2s ease;
+}
+.stack-item:hover { border-color: var(--border2); }
+
+.stack-icon {
+  width: 32px; height: 32px;
+  background: var(--accent-dim);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+.stack-content { flex: 1; }
+.stack-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+.stack-reason {
+  font-size: 0.78rem;
+  color: var(--text3);
+  font-style: italic;
+  line-height: 1.5;
+}
+.stack-value {
+  font-size: 0.7rem;
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+  align-self: center;
+  flex-shrink: 0;
+}
+
+/* Price block */
+.price-block {
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  padding: 2rem;
+  text-align: center;
+  background: var(--surface);
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.price-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+}
+.price-crossed {
+  font-size: 1rem;
+  color: var(--text3);
+  text-decoration: line-through;
+  margin-bottom: 0.3rem;
+}
+.price-main {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(3rem, 10vw, 5rem);
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+.price-label {
+  font-size: 0.75rem;
+  color: var(--text3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* ─── SECTION 7: OBJECTIONS ──────────────────────── */
+#objections {
+  padding: 5rem 1.5rem;
+  max-width: 720px;
+  margin: 0 auto;
+  display: none;
+}
+#objections.active { display: block; }
+
+.objection-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.5rem, 4.5vw, 2.2rem);
+  color: var(--text);
+  margin-bottom: 2rem;
+}
+
+.obj-card {
+  margin-bottom: 1.5rem;
+  border-left: 2px solid var(--border2);
+  padding-left: 1.2rem;
+  opacity: 0;
+  animation: fadeUp 0.5s ease both;
+}
+.obj-thought {
+  font-size: 0.9rem;
+  color: var(--text3);
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+.obj-thought::before { content: '"'; }
+.obj-thought::after { content: '"'; }
+.obj-answer {
+  font-size: 0.85rem;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.obj-answer strong { color: var(--accent); font-style: normal; }
+
+/* ─── SECTION 8: TESTIMONIAL FORM ───────────────── */
+#capture {
+  padding: 5rem 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+  display: none;
+}
+#capture.active { display: block; }
+
+.capture-headline {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 5.5vw, 2.6rem);
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+.capture-sub {
+  font-size: 0.82rem;
+  color: var(--text3);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+.form-label {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: 0.6rem;
+}
+.form-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.9rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--radius2);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+}
+.radio-option:hover { border-color: var(--border2); background: var(--surface); }
+.radio-option input { accent-color: var(--accent); }
+.radio-option span { font-size: 0.85rem; color: var(--text2); }
+
+.btn-submit {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  padding: 1rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+.btn-submit:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0a0a0a;
+  box-shadow: 0 8px 30px rgba(212,245,122,0.25);
+}
+
+/* ─── SECTION 9: REINFORCEMENT ───────────────────── */
+#reinforcement {
+  padding: 5rem 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  display: none;
+}
+#reinforcement.active { display: block; }
+
+.reinforce-line {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.5rem, 5vw, 2.4rem);
+  color: var(--text);
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: fadeUp 0.6s ease both;
+}
+.reinforce-accent {
+  color: var(--accent);
+  font-style: italic;
+}
+.reinforce-sub {
+  font-size: 0.85rem;
+  color: var(--text3);
+  line-height: 1.7;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.3s both;
+  margin-bottom: 3rem;
+}
+
+/* ─── SECTION 10: FINAL CLOSE ────────────────────── */
+#final-close {
+  padding: 5rem 1.5rem 8rem;
+  max-width: 680px;
+  margin: 0 auto;
+  display: none;
+}
+#final-close.active { display: block; }
+
+.close-contrast {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+}
+
+.close-headline {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2rem, 7vw, 3.8rem);
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.close-alt {
+  font-size: 0.85rem;
+  color: var(--text3);
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+.close-alt span { text-decoration: line-through; opacity: 0.5; }
+
+/* Main CTA */
+.btn-cta-wrap {
+  position: relative;
+  margin-bottom: 1rem;
+}
+.btn-cta {
+  display: block;
+  width: 100%;
+  background: var(--accent);
+  color: #0a0a0a;
+  border: none;
+  padding: 1.3rem 2rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  border-radius: var(--radius2);
+  transition: all 0.25s ease;
+  line-height: 1.3;
+  text-align: center;
+  text-decoration: none;
+}
+.btn-cta:hover {
+  background: var(--accent2);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(212,245,122,0.35);
+}
+.btn-cta:active { transform: translateY(-1px); }
+
+.cta-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.cta-badge {
+  font-size: 0.7rem;
+  color: var(--text3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.7rem;
+  border-radius: 100px;
+  letter-spacing: 0.05em;
+}
+
+.close-or {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text3);
+  margin: 1.5rem 0;
+  position: relative;
+}
+.close-or::before, .close-or::after {
+  content: '';
+  position: absolute;
+  top: 50%; width: 35%;
+  height: 1px;
+  background: var(--border);
+}
+.close-or::before { left: 0; }
+.close-or::after { right: 0; }
+
+.btn-quit {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  padding: 0.8rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+  letter-spacing: 0.05em;
+}
+.btn-quit:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+
+/* Summary table */
+.summary-block {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.summary-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+}
+.summary-row:last-child { border-bottom: none; }
+.summary-check { color: var(--accent); margin-right: 0.6rem; }
+.summary-item { color: var(--text2); flex: 1; }
+.summary-val { color: var(--text3); font-size: 0.75rem; }
+.summary-total {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.summary-total-label { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--text); }
+.summary-total-crossed { text-decoration: line-through; color: var(--text3); font-size: 0.8rem; }
+.summary-total-price {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+  color: var(--accent);
+}
+
+/* sticky CTA mobile */
+#sticky-cta {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(8,8,8,0.95);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border2);
+  padding: 1rem 1.5rem;
+  z-index: 100;
+  transform: translateY(100%);
+  transition: transform 0.4s ease;
+}
+#sticky-cta.visible { transform: translateY(0); }
+
+.sticky-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.sticky-text { font-size: 0.78rem; color: var(--text3); line-height: 1.4; flex: 1; }
+.sticky-text strong { color: var(--accent); display: block; }
+.sticky-btn {
+  background: var(--accent);
+  color: #0a0a0a;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+.sticky-btn:hover { background: var(--accent2); }
+
+/* Divider */
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ─── ABANDON MODAL ──────────────────────────────── */
+#abandon-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+#abandon-modal.visible { opacity: 1; pointer-events: all; }
+
+.modal-box {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  animation: fadeUp 0.4s ease;
+}
+.modal-emoji { font-size: 2.5rem; margin-bottom: 1rem; }
+.modal-headline {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.6rem;
+  color: var(--text);
+  margin-bottom: 0.6rem;
+}
+.modal-sub {
+  font-size: 0.82rem;
+  color: var(--text3);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+.modal-btn-main {
+  display: block;
+  width: 100%;
+  background: var(--accent);
+  color: #0a0a0a;
+  border: none;
+  padding: 0.95rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  margin-bottom: 0.6rem;
+  transition: all 0.2s ease;
+}
+.modal-btn-main:hover { background: var(--accent2); }
+.modal-btn-skip {
+  background: transparent;
+  border: none;
+  color: var(--text3);
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  padding: 0.4rem;
+  transition: color 0.2s;
+}
+.modal-btn-skip:hover { color: var(--text2); }
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+@media (max-width: 600px) {
+  .stack-value { display: none; }
+  .summary-row { flex-wrap: wrap; gap: 0.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- ═══ SECTION 1: HOOK ════════════════════════════ -->
+<section id="hook">
+  <div>
+    <p class="hook-line" id="h1" style="font-size:clamp(1.8rem,6vw,3.5rem);">
+      You were supposed to launch already.<span class="cursor-blink"></span>
+    </p>
+    <p class="hook-line hook-line-2" id="h2">Someone in your city did it this week.</p>
+    <p class="hook-line hook-line-3" id="h3">Same tools. Same phone. They just didn't wait.</p>
+  </div>
+</section>
+
+<!-- ═══ SECTION 2: CHALLENGE ════════════════════════ -->
+<section id="challenge">
+  <div class="challenge-label">60-Second Challenge</div>
+  <h2 class="challenge-headline">Prove you<br>can't do this.</h2>
+  <p class="challenge-sub">Most people can't. Most people don't try.</p>
+  <button class="btn-challenge" id="start-challenge">Start the 60-Second Challenge</button>
+  <p class="timer-pill">No sign-up. No credit card. Just you and 60 seconds.</p>
+</section>
+
+<!-- ═══ SECTION 3: ENGINE ════════════════════════════ -->
+<section id="engine">
+  <div class="step-indicator" id="step-dots">
+    <div class="step-dot active" id="dot-1"></div>
+    <div class="step-dot" id="dot-2"></div>
+    <div class="step-dot" id="dot-3"></div>
+    <div class="step-dot" id="dot-4"></div>
+    <div class="step-dot" id="dot-5"></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step-block active" id="step-1">
+    <p class="step-prompt">Type ONE thing you know.</p>
+    <p class="step-sub">A skill. A topic. Something you've figured out that others haven't yet.</p>
+    <textarea class="input-field" id="user-topic" rows="2" placeholder="e.g. budgeting, candle making, social media…" maxlength="80"></textarea>
+    <div class="hint-row" id="hints">
+      <span class="hint-pill" onclick="fillHint('budgeting for beginners')">budgeting</span>
+      <span class="hint-pill" onclick="fillHint('social media growth')">social media</span>
+      <span class="hint-pill" onclick="fillHint('freelance writing')">freelance work</span>
+      <span class="hint-pill" onclick="fillHint('home cooking')">cooking</span>
+      <span class="hint-pill" onclick="fillHint('productivity systems')">productivity</span>
+    </div>
+    <button class="btn-continue" id="step1-next">Continue →</button>
+  </div>
+
+  <!-- STEP 2: Loading -->
+  <div class="step-block" id="step-loading">
+    <div class="loading-block">
+      <p class="loading-text">Building your product…</p>
+      <div class="loading-bar-wrap"><div class="loading-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Ideas -->
+  <div class="step-block" id="step-2">
+    <p class="step-prompt">These could make you your first sale.</p>
+    <p class="step-sub">Based on what you just typed — three real product ideas.</p>
+    <div id="ideas-container"></div>
+  </div>
+
+  <!-- STEP 3: Select -->
+  <div class="step-block" id="step-3">
+    <p class="step-prompt">Pick the one you'd actually sell.</p>
+    <p class="step-sub">Not the "best" one. The one that feels real.</p>
+    <div id="selection-container"></div>
+    <button class="btn-continue hidden" id="step3-next">Build this product →</button>
+  </div>
+
+  <!-- STEP 4: Build -->
+  <div class="step-block" id="step-4">
+    <p class="step-prompt">Your product is being built.</p>
+    <p class="step-sub" style="margin-bottom:1.5rem;">Watch it take shape.</p>
+    <div class="product-build" id="product-build-container">
+      <div class="build-title" id="build-title"></div>
+      <div class="build-section" id="build-sec-1">
+        <div class="build-section-label">What It Solves</div>
+        <div class="build-section-content" id="build-problem"></div>
+      </div>
+      <div class="build-section" id="build-sec-2">
+        <div class="build-section-label">What's Inside</div>
+        <div class="build-section-content" id="build-contents"></div>
+      </div>
+      <div class="build-section" id="build-sec-3">
+        <div class="build-section-label">Who It's For</div>
+        <div class="build-section-content" id="build-audience"></div>
+      </div>
+      <div class="build-section" id="build-sec-4">
+        <div class="build-section-label">Format</div>
+        <div class="build-section-content" id="build-format"></div>
+      </div>
+    </div>
+    <button class="btn-continue hidden" id="step4-next" style="margin-top:1.5rem;">See your sales page →</button>
+  </div>
+
+  <!-- STEP 5: Sales Preview -->
+  <div class="step-block" id="step-5">
+    <p class="step-prompt">Your sales page.</p>
+    <p class="step-sub" style="margin-bottom:1.5rem;">This is what your buyers would see.</p>
+    <div class="sales-preview" id="sales-preview">
+      <div class="preview-label">Sales Page Preview</div>
+      <div class="preview-headline" id="preview-headline"></div>
+      <div class="preview-pitch" id="preview-pitch"></div>
+      <div class="preview-cta" id="preview-cta"></div>
+      <div class="watermark">full profit system</div>
+    </div>
+    <button class="btn-continue" id="step5-next" style="margin-top:1.5rem;">This is real. Now what? →</button>
+  </div>
+</section>
+
+<!-- ═══ SECTION 4: IDENTITY SHIFT ══════════════════ -->
+<section id="identity">
+  <div>
+    <p class="identity-line" id="id-1">You didn't just generate an idea.</p>
+    <p class="identity-line" id="id-2">You started a product.</p>
+    <p class="identity-line pause" id="id-3">Most people stop right here.</p>
+    <p class="identity-line pause" id="id-4" style="font-size:clamp(0.9rem,3vw,1.3rem); color: var(--text3);">This is where ideas die.</p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ═══ SECTION 5-6: OFFER ══════════════════════════ -->
+<section id="offer-section">
+  <p style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;">The System That Finishes It</p>
+  <h2 class="offer-hook">The Full Profit Bundle is how you <span>don't stop here.</span></h2>
+  <p class="offer-sub">You built the idea. The Bundle gives you everything to turn it into money — this weekend, using only your phone.</p>
+
+  <div class="offer-stack" id="offer-stack">
+    <div class="stack-item" style="animation-delay:0.0s">
+      <div class="stack-icon">📖</div>
+      <div class="stack-content">
+        <div class="stack-name">Full Profit Method Guide</div>
+        <div class="stack-reason">So you don't waste weeks figuring out where to start</div>
+      </div>
+      <div class="stack-value">$27</div>
+    </div>
+    <div class="stack-item" style="animation-delay:0.1s">
+      <div class="stack-icon">🤖</div>
+      <div class="stack-content">
+        <div class="stack-name">Master Prompt Pack</div>
+        <div class="stack-reason">So you don't stare at a blank page for hours</div>
+      </div>
+      <div class="stack-value">$37</div>
+    </div>
+    <div class="stack-item" style="animation-delay:0.2s">
+      <div class="stack-icon">✍️</div>
+      <div class="stack-content">
+        <div class="stack-name">Copywriting Prompt</div>
+        <div class="stack-reason">So you don't need to hire a $500 copywriter</div>
+      </div>
+      <div class="stack-value">$27</div>
+    </div>
+    <div class="stack-item" style="animation-delay:0.3s">
+      <div class="stack-icon">⚙️</div>
+      <div class="stack-content">
+        <div class="stack-name">Apps Script Automation Code</div>
+        <div class="stack-reason">So you don't manually send every product link</div>
+      </div>
+      <div class="stack-value">$47</div>
+    </div>
+    <div class="stack-item" style="animation-delay:0.4s">
+      <div class="stack-icon">🎨</div>
+      <div class="stack-content">
+        <div class="stack-name">Canva Sales Page Template</div>
+        <div class="stack-reason">So you don't start from a blank canvas</div>
+      </div>
+      <div class="stack-value">$19</div>
+    </div>
+    <div class="stack-item" style="animation-delay:0.5s">
+      <div class="stack-icon">🛡️</div>
+      <div class="stack-content">
+        <div class="stack-name">Two Google Sites Templates</div>
+        <div class="stack-reason">So you don't get scammed by fake payment screenshots</div>
+      </div>
+      <div class="stack-value">$37</div>
+    </div>
+    <div class="stack-item" style="animation-delay:0.6s">
+      <div class="stack-icon">✅</div>
+      <div class="stack-content">
+        <div class="stack-name">Full Launch Checklist</div>
+        <div class="stack-reason">So you don't miss a step and wonder why it's not working</div>
+      </div>
+      <div class="stack-value">$17</div>
+    </div>
+    <div class="stack-item" style="animation-delay:0.7s;border-color:var(--accent)">
+      <div class="stack-icon" style="background:var(--accent-dim);">🔍</div>
+      <div class="stack-content">
+        <div class="stack-name">30-Day Personal Review Guarantee</div>
+        <div class="stack-reason">So you don't give up because you got stuck alone</div>
+      </div>
+      <div class="stack-value">$97</div>
+    </div>
+  </div>
+
+  <div class="price-block">
+    <p class="price-crossed">Total real-world value: $308</p>
+    <p class="price-main">$17</p>
+    <p class="price-label">One time. No subscription. Keep 100% of every sale.</p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ═══ SECTION 7: OBJECTIONS ═══════════════════════ -->
+<section id="objections">
+  <h3 class="objection-title">You're probably thinking one of these.</h3>
+
+  <div class="obj-card" style="animation-delay:0.1s">
+    <p class="obj-thought">I don't have an audience. Will this even work?</p>
+    <p class="obj-answer">The system doesn't need an audience. It needs <strong>one post</strong> with your Canva page link — on Facebook, TikTok, a group, anywhere. Your first buyer is probably someone already watching you who's been waiting to see what you sell.</p>
+  </div>
+
+  <div class="obj-card" style="animation-delay:0.2s">
+    <p class="obj-thought">What if someone sends a fake payment screenshot?</p>
+    <p class="obj-answer">That's exactly what the Two-Site System prevents. Every buyer gets Site A automatically — it looks real but has no product. You check your payment app. <strong>Real payment → you send Site B in 30 seconds. Fake → you do nothing.</strong> They have a welcome page. That's it.</p>
+  </div>
+
+  <div class="obj-card" style="animation-delay:0.3s">
+    <p class="obj-thought">I don't have money for tools or subscriptions.</p>
+    <p class="obj-answer">The entire system runs on <strong>free tools</strong>. Google Forms. Canva free plan. Google Sites. The monthly cost after launch is literally $0. You spend $17 once and keep every peso of every sale forever.</p>
+  </div>
+
+  <div class="obj-card" style="animation-delay:0.4s">
+    <p class="obj-thought">I can't get Stripe or PayPal in my country.</p>
+    <p class="obj-answer">You don't need them. The system is built around <strong>direct local payments</strong> — GCash, Maya, PayNow, UPI, M-Pesa, bank transfer, anything. If someone can send you money on any platform, this works.</p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ═══ SECTION 8: CAPTURE FORM ═════════════════════ -->
+<section id="capture">
+  <p class="capture-headline">You just did more than most people do in months.</p>
+  <p class="capture-sub">Lock in what you built. This takes 30 seconds and it makes the next step real.</p>
+
+  <div class="form-group">
+    <label class="form-label" for="cap-product">What did you just create?</label>
+    <input class="form-input" id="cap-product" type="text" placeholder="The product you just built above…">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" for="cap-time">How long did that take?</label>
+    <input class="form-input" id="cap-time" type="text" placeholder="e.g. 3 minutes, less than I expected…">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Did you expect it to be this easy?</label>
+    <div class="radio-group">
+      <label class="radio-option"><input type="radio" name="expect" value="no"> <span>No — honestly surprised</span></label>
+      <label class="radio-option"><input type="radio" name="expect" value="kinda"> <span>Kind of — but now I actually believe it</span></label>
+      <label class="radio-option"><input type="radio" name="expect" value="yes"> <span>Yes — I just needed to start</span></label>
+    </div>
+  </div>
+
+  <button class="btn-submit" id="submit-capture">Lock It In →</button>
+</section>
+
+<!-- ═══ SECTION 9: REINFORCEMENT ════════════════════ -->
+<section id="reinforcement">
+  <p class="reinforce-line">This is exactly how <span class="reinforce-accent">first sales start.</span></p>
+  <p class="reinforce-sub">An idea. A page. One post. Someone buys.<br>You screenshot it. You can't believe it worked.<br>Then you do it again.</p>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ═══ SECTION 10: FINAL CLOSE ═════════════════════ -->
+<section id="final-close">
+  <p class="close-contrast">You have two options.</p>
+  <h2 class="close-headline">Finish what<br>you just started.</h2>
+  <p class="close-alt">Or close this page and come back in 6 months.<br><span>When other people have already made their first 50 sales.</span></p>
+
+  <div class="summary-block">
+    <div class="summary-row"><span class="summary-check">✓</span><span class="summary-item">Full Profit Method Guide (28 pages)</span><span class="summary-val">$27</span></div>
+    <div class="summary-row"><span class="summary-check">✓</span><span class="summary-item">Master Prompt Pack</span><span class="summary-val">$37</span></div>
+    <div class="summary-row"><span class="summary-check">✓</span><span class="summary-item">Copywriting Prompt</span><span class="summary-val">$27</span></div>
+    <div class="summary-row"><span class="summary-check">✓</span><span class="summary-item">Apps Script Automation Code</span><span class="summary-val">$47</span></div>
+    <div class="summary-row"><span class="summary-check">✓</span><span class="summary-item">Canva Sales Page Template</span><span class="summary-val">$19</span></div>
+    <div class="summary-row"><span class="summary-check">✓</span><span class="summary-item">Two Google Sites Templates</span><span class="summary-val">$37</span></div>
+    <div class="summary-row"><span class="summary-check">✓</span><span class="summary-item">Full Launch Checklist</span><span class="summary-val">$17</span></div>
+    <div class="summary-row"><span class="summary-check">✓</span><span class="summary-item">30-Day Personal Review Guarantee</span><span class="summary-val">$97</span></div>
+    <div class="summary-total">
+      <div>
+        <div class="summary-total-label">Your Price Today</div>
+        <div class="summary-total-crossed">$308 total value</div>
+      </div>
+      <div class="summary-total-price">$17</div>
+    </div>
+  </div>
+
+  <div class="btn-cta-wrap">
+    <a href="#" class="btn-cta" id="main-cta">Get the Full Profit Bundle — $17<br><span style="font-size:0.78em;font-weight:600;opacity:0.85;">First Sale This Weekend ↗</span></a>
+  </div>
+
+  <div class="cta-badges">
+    <span class="cta-badge">✓ Instant delivery</span>
+    <span class="cta-badge">✓ Works in any country</span>
+    <span class="cta-badge">✓ $0/month to run</span>
+    <span class="cta-badge">✓ 30-day guarantee</span>
+  </div>
+
+  <div class="close-or">or</div>
+
+  <button class="btn-quit" id="btn-quit">Close this page and come back in 6 months</button>
+</section>
+
+<!-- ═══ STICKY CTA ═══════════════════════════════════ -->
+<div id="sticky-cta">
+  <div class="sticky-inner">
+    <div class="sticky-text"><strong>Full Profit Bundle — $17</strong>First sale this weekend. 30-day guarantee.</div>
+    <button class="sticky-btn" onclick="document.getElementById('main-cta').scrollIntoView({behavior:'smooth'})">Get It Now</button>
+  </div>
+</div>
+
+<!-- ═══ ABANDON MODAL ════════════════════════════════ -->
+<div id="abandon-modal">
+  <div class="modal-box">
+    <div class="modal-emoji">⏸</div>
+    <h3 class="modal-headline">You built something real.</h3>
+    <p class="modal-sub">You created a product idea, outlined it, and previewed your sales page. That took most people months just to think about.<br><br>Are you sure you want to leave it here?</p>
+    <button class="modal-btn-main" onclick="closeModal(); document.getElementById('main-cta').scrollIntoView({behavior:'smooth'})">Finish What I Started — $17</button>
+    <button class="modal-btn-skip" onclick="closeModal()">Continue reading first</button>
+  </div>
+</div>
+
+<script>
+// ─── STATE ──────────────────────────────────────────
+const state = {
+  topic: '',
+  ideas: [],
+  selectedIdea: null,
+  productData: null,
+  currentStep: 0,
+  challengeStarted: false,
+  formSubmitted: false,
+};
+
+// ─── PROGRESS BAR ────────────────────────────────────
+function setProgress(pct) {
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+// ─── SECTION 1: HOOK ─────────────────────────────────
+window.addEventListener('load', () => {
+  setTimeout(() => showLine('h1'), 400);
+  setTimeout(() => showLine('h2'), 2000);
+  setTimeout(() => showLine('h3'), 3600);
+  setTimeout(() => {
+    document.getElementById('challenge').classList.add('visible');
+    setProgress(5);
+  }, 5200);
+});
+
+function showLine(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('visible');
+}
+
+// ─── SECTION 2: CHALLENGE ─────────────────────────────
+document.getElementById('start-challenge').addEventListener('click', () => {
+  state.challengeStarted = true;
+  document.getElementById('challenge').style.opacity = '0';
+  document.getElementById('challenge').style.transform = 'translateY(-20px)';
+  setTimeout(() => {
+    document.getElementById('challenge').style.display = 'none';
+    document.getElementById('engine').classList.add('active');
+    document.getElementById('engine').scrollIntoView({ behavior: 'smooth' });
+    setProgress(15);
+  }, 500);
+
+  setTimeout(() => {
+    document.getElementById('hints').classList.add('visible');
+  }, 2000);
+});
+
+// ─── STEP 1 ───────────────────────────────────────────
+document.getElementById('step1-next').addEventListener('click', () => {
+  const topic = document.getElementById('user-topic').value.trim();
+  if (!topic) {
+    document.getElementById('user-topic').style.borderColor = 'var(--red)';
+    document.getElementById('user-topic').placeholder = 'You need to type something first.';
+    setTimeout(() => { document.getElementById('user-topic').style.borderColor = ''; }, 1500);
+    return;
+  }
+  state.topic = topic;
+  goToStep('step-loading');
+  updateDots(2);
+  setProgress(30);
+
+  // Fake load, then show ideas
+  setTimeout(() => {
+    state.ideas = generateIdeas(topic);
+    renderIdeas();
+    goToStep('step-2');
+    setProgress(40);
+  }, 1200);
+});
+
+function fillHint(text) {
+  document.getElementById('user-topic').value = text;
+  document.getElementById('user-topic').focus();
+}
+
+// ─── IDEA GENERATION ──────────────────────────────────
+function generateIdeas(topic) {
+  const templates = [
+    {
+      type: 'Quick-Start Guide',
+      gen: (t) => ({
+        title: `The ${capitalize(t)} Quick-Start Guide`,
+        desc: `A step-by-step PDF for complete beginners. Shows exactly how to start with ${t} in under a week — without the overwhelm.`,
+        price: '$7–$17',
+      })
+    },
+    {
+      type: 'Template Pack',
+      gen: (t) => ({
+        title: `${capitalize(t)} Template Pack`,
+        desc: `Ready-to-use templates that save hours of work. Buyers download, customize, and use them immediately.`,
+        price: '$9–$27',
+      })
+    },
+    {
+      type: 'Mini Course',
+      gen: (t) => ({
+        title: `${capitalize(t)} in 7 Days`,
+        desc: `A short email-based or PDF mini-course that walks buyers through ${t} in one focused week. Feels premium. Priced accessibly.`,
+        price: '$17–$37',
+      })
+    },
+  ];
+
+  return templates.map(t => ({ ...t.gen(topic), type: t.type }));
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function renderIdeas() {
+  const container = document.getElementById('ideas-container');
+  container.innerHTML = '';
+  state.ideas.forEach((idea, i) => {
+    const card = document.createElement('div');
+    card.className = 'idea-card';
+    card.style.animationDelay = (i * 0.15) + 's';
+    card.innerHTML = `
+      <div class="idea-tag">${idea.type}</div>
+      <h3>${idea.title}</h3>
+      <p>${idea.desc}</p>
+      <p style="margin-top:0.5rem;font-size:0.72rem;color:var(--accent);">Suggested price: ${idea.price}</p>
+    `;
+    card.addEventListener('click', () => selectIdea(i, card));
+    container.appendChild(card);
+  });
+
+  // Add continue after small delay
+  setTimeout(() => {
+    const btn = document.createElement('button');
+    btn.className = 'btn-continue hidden';
+    btn.id = 'step2-next';
+    btn.textContent = 'These are real products → Pick one';
+    btn.addEventListener('click', () => {
+      goToStep('step-3');
+      renderSelectionStep();
+      updateDots(3);
+      setProgress(55);
+    });
+    container.appendChild(btn);
+  }, 600);
+}
+
+function selectIdea(i, card) {
+  document.querySelectorAll('.idea-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  state.selectedIdea = state.ideas[i];
+  const btn = document.getElementById('step2-next');
+  if (btn) btn.classList.remove('hidden');
+}
+
+// ─── STEP 3: Selection ────────────────────────────────
+function renderSelectionStep() {
+  const container = document.getElementById('selection-container');
+  container.innerHTML = '';
+  state.ideas.forEach((idea, i) => {
+    const card = document.createElement('div');
+    card.className = 'idea-card';
+    card.style.animationDelay = (i * 0.12) + 's';
+    card.innerHTML = `
+      <div class="idea-tag">${idea.type}</div>
+      <h3>${idea.title}</h3>
+      <p style="font-size:0.78rem;color:var(--text3);">${idea.price}</p>
+    `;
+    card.addEventListener('click', () => {
+      document.querySelectorAll('#selection-container .idea-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      state.selectedIdea = idea;
+      document.getElementById('step3-next').classList.remove('hidden');
+    });
+    container.appendChild(card);
+  });
+}
+
+document.getElementById('step3-next').addEventListener('click', () => {
+  if (!state.selectedIdea) return;
+  goToStep('step-4');
+  updateDots(4);
+  setProgress(70);
+  buildProduct();
+});
+
+// ─── STEP 4: Build ────────────────────────────────────
+function buildProduct() {
+  const idea = state.selectedIdea;
+  const topic = state.topic;
+
+  const pd = {
+    title: idea.title,
+    problem: `Most people trying to get started with ${topic} waste time on the wrong things, get overwhelmed by conflicting advice, and give up before they see results.`,
+    contents: `• A clear, beginner-friendly breakdown of ${topic}\n• The 3 biggest mistakes to avoid\n• A simple action plan to get started this week\n• Bonus: A checklist you can use immediately`,
+    audience: `Complete beginners who want results fast. People who have tried to learn about ${topic} before but got confused or stuck.`,
+    format: `Downloadable PDF, 12–20 pages. Designed to be read in one sitting and acted on immediately.`,
+  };
+
+  state.productData = pd;
+
+  document.getElementById('build-title').textContent = pd.title;
+
+  const sections = [
+    { id: 'build-sec-1', content: 'build-problem', text: pd.problem },
+    { id: 'build-sec-2', content: 'build-contents', text: pd.contents },
+    { id: 'build-sec-3', content: 'build-audience', text: pd.audience },
+    { id: 'build-sec-4', content: 'build-format', text: pd.format },
+  ];
+
+  sections.forEach((sec, i) => {
+    setTimeout(() => {
+      document.getElementById(sec.content).textContent = sec.text;
+      document.getElementById(sec.id).classList.add('revealed');
+
+      if (i === sections.length - 1) {
+        setTimeout(() => {
+          document.getElementById('step4-next').classList.remove('hidden');
+        }, 400);
+      }
+    }, 600 + i * 700);
+  });
+}
+
+document.getElementById('step4-next').addEventListener('click', () => {
+  goToStep('step-5');
+  updateDots(5);
+  setProgress(85);
+  renderSalesPreview();
+});
+
+// ─── STEP 5: Sales Preview ───────────────────────────
+function renderSalesPreview() {
+  const idea = state.selectedIdea;
+  const topic = state.topic;
+  const sp = document.getElementById('sales-preview');
+  sp.style.opacity = '0';
+
+  setTimeout(() => {
+    document.getElementById('preview-headline').textContent =
+      `Finally: A Simple Way to ${capitalize(topic)} Without Wasting Months Figuring It Out`;
+    document.getElementById('preview-pitch').textContent =
+      `If you've been trying to get started with ${topic} but can't figure out where to begin — this guide gives you the exact steps, in order, with nothing left out. Read it in one sitting. Start using it today.`;
+    document.getElementById('preview-cta').textContent =
+      `Get Instant Access — ${idea.price.split('–')[0]}`;
+    sp.style.transition = 'opacity 0.6s ease';
+    sp.style.opacity = '1';
+  }, 300);
+}
+
+document.getElementById('step5-next').addEventListener('click', () => {
+  document.getElementById('engine').style.display = 'none';
+  document.getElementById('identity').classList.add('active');
+  document.getElementById('identity').scrollIntoView({ behavior: 'smooth' });
+  setProgress(88);
+  runIdentitySequence();
+});
+
+// ─── SECTION 4: IDENTITY ─────────────────────────────
+function runIdentitySequence() {
+  const lines = ['id-1', 'id-2', 'id-3', 'id-4'];
+  lines.forEach((id, i) => {
+    setTimeout(() => {
+      document.getElementById(id).classList.add('visible');
+    }, 600 + i * 1000);
+  });
+
+  setTimeout(() => {
+    document.getElementById('offer-section').classList.add('active');
+    document.getElementById('objections').classList.add('active');
+    document.getElementById('capture').classList.add('active');
+    document.getElementById('reinforcement').classList.add('active');
+    document.getElementById('final-close').classList.add('active');
+    setProgress(92);
+
+    // Pre-fill the capture form
+    if (state.selectedIdea) {
+      document.getElementById('cap-product').value = state.selectedIdea.title;
+    }
+
+    // Show sticky CTA after delay
+    setTimeout(() => {
+      document.getElementById('sticky-cta').classList.add('visible');
+    }, 2000);
+  }, 5000);
+}
+
+// ─── STEP NAVIGATION ─────────────────────────────────
+function goToStep(stepId) {
+  document.querySelectorAll('.step-block').forEach(b => b.classList.remove('active'));
+  const target = document.getElementById(stepId);
+  if (target) {
+    target.classList.add('active');
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function updateDots(active) {
+  document.querySelectorAll('.step-dot').forEach((dot, i) => {
+    dot.classList.remove('active', 'done');
+    if (i + 1 < active) dot.classList.add('done');
+    else if (i + 1 === active) dot.classList.add('active');
+  });
+}
+
+// ─── CAPTURE FORM ─────────────────────────────────────
+document.getElementById('submit-capture').addEventListener('click', () => {
+  state.formSubmitted = true;
+  document.getElementById('submit-capture').textContent = 'Locked in. ✓';
+  document.getElementById('submit-capture').style.background = 'var(--accent)';
+  document.getElementById('submit-capture').style.color = '#0a0a0a';
+  document.getElementById('submit-capture').style.borderColor = 'var(--accent)';
+  setProgress(97);
+
+  setTimeout(() => {
+    document.getElementById('reinforcement').scrollIntoView({ behavior: 'smooth' });
+  }, 500);
+});
+
+// ─── QUIT BUTTON → MODAL ────────────────────────────
+document.getElementById('btn-quit').addEventListener('click', () => {
+  if (state.challengeStarted) {
+    document.getElementById('abandon-modal').classList.add('visible');
+  }
+});
+
+function closeModal() {
+  document.getElementById('abandon-modal').classList.remove('visible');
+}
+
+// Exit intent (desktop)
+let modalShown = false;
+document.addEventListener('mouseleave', (e) => {
+  if (e.clientY < 5 && state.challengeStarted && !modalShown) {
+    modalShown = true;
+    document.getElementById('abandon-modal').classList.add('visible');
+  }
+});
+
+// ─── SCROLL PROGRESS ─────────────────────────────────
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  const total = document.body.scrollHeight - window.innerHeight;
+  if (total > 0 && state.challengeStarted) {
+    const pct = Math.min(97, 90 + (scrolled / total) * 10);
+    // Don't override higher values
+    const bar = document.getElementById('progress-bar');
+    const current = parseFloat(bar.style.width) || 0;
+    if (pct > current) bar.style.width = pct + '%';
+  }
+});
+
+// ─── INTERSECTION OBSERVER for offer animations ───────
+const observerConfig = { threshold: 0.15 };
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, observerConfig);
+
+document.querySelectorAll('.obj-card').forEach(el => {
+  el.style.transition = 'all 0.5s ease';
+  fadeObserver.observe(el);
+});
+
+// CTA click — set progress to 100
+document.getElementById('main-cta').addEventListener('click', () => {
+  setProgress(100);
+});
+</script>
+</body>
+</html>
